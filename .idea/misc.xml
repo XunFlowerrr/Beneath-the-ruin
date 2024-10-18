@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="EntryPointsManager">
+    <entry_points version="2.0">
+      <entry_point TYPE="field" FQNAME="entity.Skill animation" />
+    </entry_points>
+    <pattern value="entity.Skill" method="getAnimation" />
+    <pattern value="entity.Skill" method="getDamage" />
+    <pattern value="entity.Skill" method="getDEFAULT_DAMAGE" />
+    <pattern value="entity.Skill" method="getName" />
+    <pattern value="entity.Skill" method="getSprite" />
+    <pattern value="entity.Skill" />
+    <pattern value="entity.Skill" method="Skill" />
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_20" default="true" project-jdk-name="corretto-20" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/out" />
+  </component>
+</project>

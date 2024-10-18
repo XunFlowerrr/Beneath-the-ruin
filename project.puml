@@ -1,0 +1,949 @@
+@startuml
+interface item.Consumable {
+~ void consume(Entity)
+}
+
+class tiles.block.ObjBlock {
++ <<Create>> ObjBlock(Image,Vector2f,int,int)
++ boolean update(AABB)
++ boolean isInside(AABB)
++ void render(GraphicsContext)
+}
+
+interface logic.Buffable {
+~ void applyBuff(Entity,Buff)
+}
+
+class logic.Buff {
+- int DEFAULT_DURATION
+- BuffType type
+- int duration
+- float buffValue
++ <<Create>> Buff(BuffType,int,float)
++ int getDEFAULT_DURATION()
++ BuffType getType()
++ void setType(BuffType)
++ int getDuration()
++ void setDuration(int)
++ float getBuffValue()
++ void setBuffValue(float)
++ void update()
+}
+
+
+class util.KeyHandler {
++ boolean isUpPressed
++ boolean isDownPressed
++ boolean isLeftPressed
++ boolean isRightPressed
++ boolean isEscapePressed
++ boolean isEKeyPressed
++ boolean isRKeyPressed
++ boolean isTKeyPressed
++ boolean isSpacePressed
++ <<Create>> KeyHandler(Canvas)
++ boolean allKeysReleased()
++ void handle(KeyEvent)
+}
+
+
+class util.AABB {
+- Vector2f boundingBoxPosition
+- float boundingBoxXOffset
+- float boundingBoxYOffset
+- float boundingBoxWidth
+- float boundingBoxHeight
+- float boundingBoxRadius
+- int boundingBoxSize
+- Entity associatedEntity
++ <<Create>> AABB(Vector2f,int,int)
++ <<Create>> AABB(Vector2f,int,int,int,int)
++ <<Create>> AABB(Vector2f,int)
++ Vector2f getBoundingBoxPosition()
++ void setBoundingBoxPosition(Vector2f)
++ float getBoundingBoxWidth()
++ void setBoundingBoxWidth(float)
++ float getBoundingBoxHeight()
++ void setBoundingBoxHeight(float)
++ float getBoundingBoxRadius()
++ void setBoundingBoxRadius(float)
++ void setBox(Vector2f,int,int)
++ void setCircle(Vector2f,int,Entity)
++ float getXOffset()
++ void setXOffset(float)
++ float getYOffset()
++ void setYOffset(float)
++ float getBoundingBoxXOffset()
++ void setBoundingBoxXOffset(float)
++ float getBoundingBoxYOffset()
++ void setBoundingBoxYOffset(float)
++ int getBoundingBoxSize()
++ void setBoundingBoxSize(int)
++ Entity getAssociatedEntity()
++ void setAssociatedEntity(Entity)
++ boolean isBoundingBoxColliding(AABB)
++ boolean isEnteringCircularBoundingBox(AABB)
++ boolean isCollidingWithCircularBoundingBox(AABB)
++ boolean isCollidingWithCircularBoundingBoxScreen(AABB)
+}
+
+
+enum logic.DebuffType {
++  NONE
++  SLOW
++  BURN
++  STUN
+}
+
+class entity.Enemy {
+- {static} float MARGIN_OF_ERROR
++ ArrayList<Debuff> debuffs
+# AABB sensingRange
+# AABB alertRange
+# int sensingRadius
+# Player targetPlayer
+- Boolean isAlerted
+- boolean debuffsInvincible
+- AudioClip attackSound
++ <<Create>> Enemy(Sprite,Vector2f,int,Player)
++ <<Create>> Enemy(Sprite,Vector2f,int,Player,int,int)
++ <<Create>> Enemy(Sprite,Vector2f,int,Player,int,int,int,int)
++ <<Create>> Enemy(Sprite,Vector2f,int,Player,int,int,int,int,HashMap<String,Integer>)
++ <<Create>> Enemy(Sprite,Vector2f,int,Player,int,int,int,int,HashMap<String,Integer>,HashMap<String,Integer>,int)
++ <<Create>> Enemy(Sprite,Vector2f,int,Player,int,int,int,int,HashMap<String,Integer>,HashMap<String,Integer>)
++ AudioClip getAttackSound()
++ void setAttackSound(AudioClip)
++ util.AABB getSensingRange()
++ void setSensingRange(util.AABB)
++ int getSensingRadius()
++ void setSensingRadius(int)
++ AABB getAlertRange()
++ void setAlertRange(AABB)
++ Player getTargetPlayer()
++ void setTargetPlayer(Player)
++ Boolean getAlerted()
++ void setAlerted(Boolean)
++ void update()
++ void render(GraphicsContext)
++ void move()
+# void attack()
+# void handleEntityAnimation()
++ void appliedDebuff(Debuff)
+- void startDebuffsInvincible(int)
++ void updateDebuff()
++ void playAttackSound()
+}
+
+
+class game.GameLauncher {
++ {static} int WIDTH
++ {static} int HEIGHT
+- {static} int TARGET_FPS
++ {static} MediaPlayer mediaPlayer
+- GraphicsContext graphicsContext
+- MouseHandler mouseInputHandler
+- KeyHandler keyboardInputHandler
+- GameStateManager gameStateManager
+- long lastSecondTime
+- int frameCount
++ {static} void main(String[])
+- void startGameLoop()
++ void start(Stage)
+- void update()
+- void input(MouseHandler,KeyHandler)
+- void render()
+}
+
+
+class entity.EntityCreationHelper {
+- Player PLAYER
++ <<Create>> EntityCreationHelper(Player)
++ Enemy createMaterialsHero(int,int)
++ Enemy createNightBorn(int,int)
++ Enemy createNecromancer(int,int)
+}
+
+
+enum logic.BuffType {
++  NONE
++  SPEED
++  DAMAGE
++  HEALTH
++  LIFESTEAL
+}
+
+class states.PlayState {
++ {static} Vector2f background
++ {static} Vector2f MAP_DIMENSIONS
+- Font font
+- Player PLAYER
+- TileManager TILE_MANAGER
+- Camera CAMERA
+- Vector2f PLAYER_ORIGIN
+- HashMap<String,Food> FOODS
+- ArrayList<Food> FOOD_ENTITIES
+- UserInterface UI
+- ArrayList<Enemy> ENEMIES
+- ArrayList<Skill> SKILL_ENTITIES
++ ArrayList<Image> backgroundLayers
+- boolean paused
++ <<Create>> PlayState(GameStateManager)
++ {static} Vector2f getMapDimensions()
++ {static} void setMapDimensions(Vector2f)
++ void addSkillEntity(Skill)
++ Font getFont()
++ Player getPLAYER()
++ TileManager getTILE_MANAGER()
++ void update()
++ void input(MouseHandler,KeyHandler)
++ void render(GraphicsContext)
++ ArrayList<Enemy> getEnemies()
++ Map<String,Food> getFood()
++ void pause()
+}
+
+
+class ui.UserInterface {
+- GameState gameState
+- double healthPercent
+- HashMap<String,UIElement> element
++ <<Create>> UserInterface(GameState)
++ void render(GraphicsContext)
+- void renderMenuStateUI(GraphicsContext)
+- void renderGameOverStateUI(GraphicsContext)
++ GameState getGameState()
++ void setGameState(GameState)
++ double getHealthPercent()
++ void setHealthPercent(double)
+- void renderPlayStateUI(GraphicsContext)
++ HashMap<String,UIElement> getElement()
++ void setElement(HashMap<String,UIElement>)
++ void update()
+- double calculateHealthPercent()
+}
+
+
+class logic.Debuff {
+- DebuffType name
+- int duration
+- float debuffValue
++ <<Create>> Debuff(DebuffType,int,float)
++ DebuffType getName()
++ void setName(DebuffType)
++ int getDuration()
++ void setDuration(int)
++ float getDebuffValue()
++ void setDebuffValue(float)
++ void update()
+}
+
+
+interface entity.AttackSound {
+~ void playAttackSound()
+}
+
+class graphics.Animation {
+- ArrayList<Image> frames
+- int currentFrame
+- int totalFrames
+- int updateCount
+- int updatesPerFrameChange
+- int timesPlayed
++ <<Create>> Animation(ArrayList<Image>)
++ <<Create>> Animation()
++ ArrayList<Image> getFrames()
++ void setFrames(ArrayList<Image>)
++ void setFrames(Image)
++ int getCurrentFrame()
++ void setCurrentFrame(int)
++ int getTotalFrames()
++ void setTotalFrames(int)
++ int getTimesPlayed()
++ void setTimesPlayed(int)
++ void update()
++ int getUpdatesPerFrameChange()
++ void setUpdatesPerFrameChange(int)
++ int getUpdateCount()
++ void setUpdateCount(int)
++ int getFrame()
++ void setFrame(int)
++ Image getCurrentAnimationFrame()
++ boolean hasPlayedOnce()
++ boolean hasPlayed(int)
+}
+
+
+abstract class tiles.TileMap {
++ {abstract}void render(GraphicsContext)
+}
+
+class entity.Skill {
+- int DEFAULT_DAMAGE
+- int DEFAULT_SIZE
+- int DEFAULT_COOLDOWN
+- int DEFAULT_SKILL_RANGE
+- int DEFAULT_ANIMATION_DELAY
+- AABB hitBox
+- String name
+- int size
+- int damage
+- Animation animation
+- Sprite sprite
+- Vector2f position
+- int cooldown
+- int skillRange
+- int animationDelay
+- Debuff debuff
++ <<Create>> Skill(String,Sprite)
++ <<Create>> Skill(String,int,Sprite)
++ <<Create>> Skill(String,int,Sprite,int)
++ <<Create>> Skill(String,int,Sprite,int,int)
++ <<Create>> Skill(String,int,Sprite,int,int,int)
++ Debuff getDebuff()
++ void setDebuff(Debuff)
++ int getDEFAULT_SKILL_RANGE()
++ int getDEFAULT_ANIMATION_DELAY()
++ int getSkillRange()
++ void setSkillRange(int)
++ int getAnimationDelay()
++ void setAnimationDelay(int)
++ int getDEFAULT_SIZE()
++ int getDEFAULT_COOLDOWN()
++ int getCooldown()
++ void setCooldown(int)
++ AABB getHitBox()
++ void setHitBox(AABB)
++ int getSize()
++ void setSize(int)
++ int getDEFAULT_DAMAGE()
++ String getName()
++ void setName(String)
++ int getDamage()
++ void setDamage(int)
++ Animation getAnimation()
++ void setAnimation(Animation)
++ void setAnimation(ArrayList<Image>,int)
++ Sprite getSprite()
++ void setSprite(Sprite)
++ void render(GraphicsContext)
++ void update()
++ Vector2f getPosition()
++ void setPosition(Vector2f)
++ void setPositionWithHitBox(Vector2f)
++ void handleAttack()
++ void applyDebuff(Entity,Debuff)
+}
+
+
+class states.MenuState {
+- UserInterface UI
++ <<Create>> MenuState(GameStateManager)
++ void update()
++ void input(MouseHandler,KeyHandler)
++ void render(GraphicsContext)
+}
+
+
+abstract class entity.Entity {
+# float DEFAULT_MAX_SPEED
+# float DEFAULT_ACCELERATION
+# float DEFAULT_DECELERATION
+- int INVINCIBILITY_DURATION
+- int KNOCKBACK_DURATION
+- int DEFAULT_MAX_HEALTH
+- float DEFAULT_KNOCKBACK_FORCE
+- boolean DEFAULT_INVINCIBLE
+# int customHitBoxXLeft
+# int customHitBoxXRight
+# int customHitBoxYUp
+# int customHitBoxYDown
+# int startImpactFrame
+# int endImpactFrame
+# boolean isMoveUp
+# boolean isAttack
+# Animation animation
+# Sprite sprite
+# Vector2f position
+# EntityDirection currentDirection
+# int currentSpriteIndex
+# TileCollision tileCollision
+# AABB hitBoundary
+# AABB boundary
+# float dx
+# float dy
+# float maxSpeed
+# float acceleration
+# float deceleration
+# int size
+# int health
+# int damage
+# boolean isAlive
+# boolean isDeath
+# boolean isHurting
+# int attackCooldown
+# boolean isAttackCooldown
+# boolean isXCollision
+# boolean isYCollision
+# boolean isInvincible
+- HashMap<String,Integer> AnimationSpriteMap
+- HashMap<String,Integer> AnimationDuration
+- int maxHealth
+- int invincibilityTimer
+- boolean isKnockback
+- int knockbackTimer
+- ArrayList<Debuff> debuffs
+- boolean buffsInvincible
+- ArrayList<Buff> buffs
++ <<Create>> Entity(Sprite,Vector2f,int,HashMap<String,Integer>,HashMap<String,Integer>)
++ <<Create>> Entity(Sprite,Vector2f,int,HashMap<String,Integer>)
++ <<Create>> Entity(Sprite,Vector2f,int,int)
++ int getMaxHealth()
++ void setMaxHealth(int)
++ float getDEFAULT_MAX_SPEED()
++ float getDEFAULT_ACCELERATION()
++ float getDEFAULT_DECELERATION()
++ int getAttackCooldown()
++ boolean isAttackCooldown()
++ void setAttackCooldown(int)
++ void setAttackCooldown(boolean)
++ int getDEFAULT_MAX_HEALTH()
++ boolean isDEFAULT_INVINCIBLE()
++ ArrayList<Debuff> getDebuffs()
++ void setDebuffs(ArrayList<Debuff>)
++ boolean isBuffsInvincible()
++ void setBuffsInvincible(boolean)
++ ArrayList<Buff> getBuffs()
++ void setBuffs(ArrayList<Buff>)
++ int getCustomHitBoxXLeft()
++ void setCustomHitBoxXLeft(int)
++ int getCustomHitBoxXRight()
++ void setCustomHitBoxXRight(int)
++ int getCustomHitBoxYUp()
++ void setCustomHitBoxYUp(int)
++ int getCustomHitBoxYDown()
++ void setCustomHitBoxYDown(int)
++ int getStartImpactFrame()
++ void setStartImpactFrame(int)
++ int getEndImpactFrame()
++ void setEndImpactFrame(int)
++ HashMap<String,Integer> getAnimationDuration()
++ void setAnimationDuration(HashMap<String,Integer>)
++ boolean isAlive()
++ void setAlive(boolean)
++ int getHealth()
++ void setHealth(int)
++ int getDamage()
++ void setDamage(int)
++ boolean isAttack()
++ void setAttack(boolean)
++ boolean isXCollision()
++ void setXCollision(boolean)
++ boolean isYCollision()
++ void setYCollision(boolean)
++ util.TileCollision getTileCollision()
++ void setTileCollision(util.TileCollision)
++ HashMap<String,Integer> getAnimationSpriteMap()
++ void setAnimationSpriteMap(HashMap<String,Integer>)
++ int getCurrentSpriteIndex()
++ void setCurrentSpriteIndex(int)
++ void setAnimation(int,ArrayList<Image>,int)
++ void setAnimation(int,Image,int)
++ void setHitBoxDirection()
++ void update()
+- void deadCheck()
++ boolean isDeath()
++ void setDeath(boolean)
+# void handleEntityAnimation()
++ {abstract}void render(GraphicsContext)
++ int getSize()
++ void setSize(int)
++ Animation getAnimation()
++ void setAnimation(Animation)
++ boolean isMoveUp()
++ void setMoveUp(boolean)
++ boolean isMoveDown()
++ void setMoveDown(boolean)
++ boolean isMoveLeft()
++ void setMoveLeft(boolean)
++ boolean isMoveRight()
++ void setMoveRight(boolean)
++ boolean isFallen()
++ void setFallen(boolean)
++ Sprite getSprite()
++ void setSprite(Sprite)
++ Vector2f getPosition()
++ void setPosition(Vector2f)
++ EntityDirection getCurrentDirection()
++ void setCurrentDirection(EntityDirection)
++ AABB getHitBoundary()
++ void setHitBoundary(AABB)
++ AABB getBoundary()
++ void setBoundary(AABB)
++ float getDx()
++ void setDx(float)
++ float getDy()
++ void setDy(float)
++ float getMaxSpeed()
++ void setMaxSpeed(float)
++ float getAcceleration()
++ void setAcceleration(float)
++ float getDeceleration()
++ void setDeceleration(float)
++ boolean isHurting()
++ void setHurting(boolean)
+# void reciveDamage(int)
+# void startInvincible()
+# void startInvincible(int)
+# void updateInvincibility()
+# void startAttackCooldown()
+# void startAttackCooldown(int)
+# void updateAttack()
++ void knockback(Entity)
++ int getINVINCIBILITY_DURATION()
++ int getKNOCKBACK_DURATION()
++ boolean isInvincible()
++ void setInvincible(boolean)
++ int getInvincibilityTimer()
++ void setInvincibilityTimer(int)
++ boolean isKnockback()
++ void setKnockback(boolean)
++ int getKnockbackTimer()
++ void setKnockbackTimer(int)
++ float getDEFAULT_KNOCKBACK_FORCE()
+# void startKnockback()
+# void startKnockback(int)
++ void knockback(Entity,float)
+- void updateKnockback()
++ boolean isAttackAnimation()
+# Vector2f getPositionWithOffset()
++ void appliedDebuff(Debuff)
+- void startDebuffsInvincible(int)
++ void updateDebuff()
++ void appliledBuff(Buff)
+- void startBuffInvincible(int)
++ void updateBuff()
+}
+
+
+enum entity.EntityDirection {
++  RIGHT
++  LEFT
++  DOWN
++  UP
++  FALLEN
++  IDLE
+}
+
+class tiles.block.HoleBlock {
++ <<Create>> HoleBlock(Image,Vector2f,int,int)
++ boolean update(AABB)
++ boolean isInside(AABB)
++ void render(GraphicsContext)
+}
+
+interface logic.Debuffable {
+~ void applyDebuff(Entity,Debuff)
+}
+
+class tiles.block.NormBlock {
++ <<Create>> NormBlock(Image,Vector2f,int,int)
++ boolean update(AABB)
++ boolean isInside(AABB)
++ void render(GraphicsContext)
+}
+
+class util.TileCollision {
+- Entity entity
+- Block block
++ <<Create>> TileCollision(Entity)
++ Entity getEntity()
++ void setEntity(Entity)
++ Block getBlock()
++ void setBlock(Block)
++ boolean isEntityCollidingWithTile(float,float)
+- boolean isEntityCollidingWithHole(float,float,float,float,Block)
+}
+
+
+class entity.Player {
+- int DEFAULT_DASH_COOLDOWN
+- Map<String,Boolean> skillActiveStatus
+- Map<String,Integer> skillCooldowns
+- Map<String,Integer> skillCooldownStatus
+- Map<String,Skill> skills
+- boolean isUesSkill
+- int skillInterval
+- boolean isSkillIntervalActive
+- boolean isDash
+- boolean isDashOnCooldown
+- int dashDuration
+- int dashCooldown
+- AudioClip attackSound
++ <<Create>> Player(Sprite,Vector2f,int)
+- void updateSkillInterval()
+- void startSkillInterval()
++ Map<String,Skill> getSkills()
++ void setSkills(Map<String,Skill>)
++ boolean isUesSkill()
++ void setUesSkill(boolean)
++ void addSkill(String,Skill)
++ void move()
+- void resetPlayerPosition()
++ void update(ArrayList<Enemy>)
+- Vector2f getCastDirection(Skill)
++ void render(GraphicsContext)
+# void handleEntityAnimation()
+- void handleSkillCooldowns()
++ void input(MouseHandler,KeyHandler)
+- void dash()
+- void startDashDuration()
+- void updateDashDuration()
+- void startDashCooldown()
++ void updateDashCooldown()
++ void setDeath(boolean)
++ void playAttackSound()
+}
+
+
+class item.Food {
+# Buff DEFAULT_BUFF
+# int defaultSize
+# String name
+# Vector2f position
+# AABB bounduryBox
+# int health
+# Buff buff
+# Image image
+# int size
+- boolean isDestroyed
+- boolean isConsumed
++ <<Create>> Food(String,int,Image)
++ <<Create>> Food(String,int,Buff,Image)
++ <<Create>> Food(Food,Vector2f)
++ void consume(Entity)
++ void applyBuff(Entity,Buff)
++ Buff getDEFAULT_BUFF()
++ void setDEFAULT_BUFF(Buff)
++ String getName()
++ void setName(String)
++ int getHealth()
++ void setHealth(int)
++ Buff getBuff()
++ void setBuff(Buff)
++ Image getImage()
++ void setImage(Image)
++ int getDefaultSize()
++ void setDefaultSize(int)
++ Vector2f getPosition()
++ void setPosition(Vector2f)
++ AABB getBounduryBox()
++ void setBounduryBox(AABB)
++ int getSize()
++ void setSize(int)
++ void render(GraphicsContext)
++ void update()
++ boolean isConsumed()
+}
+
+
+class util.Camera {
+- AABB collisionCam
+- AABB boundaryCam
+- boolean isMoveUp
+- boolean isMoveDown
+- boolean isMoveLeft
+- boolean isMoveRight
+- float dx
+- float dy
+- float maxSpeed
+- float acceleration
+- float deceleration
+- int widthLimit
+- int heightLimit
+- Entity entity
++ <<Create>> Camera(AABB)
++ AABB getCollisionCam()
++ void setCollisionCam(AABB)
++ AABB getBoundaryCam()
++ void setBoundaryCam(AABB)
++ boolean isMoveUp()
++ void setMoveUp(boolean)
++ boolean isMoveDown()
++ void setMoveDown(boolean)
++ boolean isMoveLeft()
++ void setMoveLeft(boolean)
++ boolean isMoveRight()
++ void setMoveRight(boolean)
++ float getDx()
++ void setDx(float)
++ float getDy()
++ void setDy(float)
++ float getMaxSpeed()
++ void setMaxSpeed(float)
++ float getAcceleration()
++ void setAcceleration(float)
++ float getDeceleration()
++ void setDeceleration(float)
++ int getWidthLimit()
++ void setWidthLimit(int)
++ int getHeightLimit()
++ void setHeightLimit(int)
++ Entity getEntity()
++ void setEntity(Entity)
++ void setLimits(int,int)
++ void update()
+- void move()
++ void target(Entity)
++ void input(MouseHandler,KeyHandler)
++ void render(GraphicsContext)
+}
+
+
+class tiles.TileManager {
++ {static} TreeMap<Integer,Integer> tileColumns
++ {static} int tileWidth
++ {static} int tileHeight
++ {static} ArrayList<TileMap> tileMaps
+- TreeMap<Integer,Sprite> tilesets
++ <<Create>> TileManager()
++ <<Create>> TileManager(String,Camera)
++ {static} int getTileWidth()
++ {static} void setTileWidth(int)
++ {static} int getTileHeight()
++ {static} void setTileHeight(int)
++ {static} ArrayList<TileMap> getTileMaps()
++ {static} void setTileMaps(ArrayList<TileMap>)
+- void addTileMap(String,int,int,Camera)
++ void render(GraphicsContext)
++ void renderGround(GraphicsContext)
++ void renderAbove(GraphicsContext)
+}
+
+
+class states.GameOverState {
+- UserInterface UI
+- ArrayList<Image> BACKGROUND_LAYER
++ <<Create>> GameOverState(GameStateManager)
++ void update()
++ void input(MouseHandler,KeyHandler)
++ void render(GraphicsContext)
+}
+
+
+class util.Vector2f {
++ {static} float worldCoordinateX
++ {static} float worldCoordinateY
++ float vectorCoordinateX
++ float vectorCoordinateY
++ <<Create>> Vector2f()
++ <<Create>> Vector2f(Vector2f)
++ <<Create>> Vector2f(float,float)
++ {static} float getWorldCoordinateX()
++ {static} void setWorldCoordinateX(float)
++ {static} float getWorldCoordinateY()
++ {static} void setWorldCoordinateY(float)
++ {static} void setWorldCoordinates(float,float)
++ void add(int,int)
++ Vector2f getWorldVar()
++ String toString()
++ float getVectorCoordinateX()
++ void setVectorCoordinateX(float)
++ float getVectorCoordinateY()
++ void setVectorCoordinateY(float)
++ Vector2f subtract(Vector2f)
++ Vector2f normalize()
+}
+
+
+class tiles.TileMapObj {
++ {static} HashMap<String,Block> tmo_blocks
+- int DEFAULT_BLOCK_ID
++ <<Create>> TileMapObj(String,TreeMap<Integer,Sprite>,int,int,int,int,TreeMap<Integer,Integer>)
++ {static} HashMap<String,Block> getTmo_blocks()
++ {static} void setTmo_blocks(HashMap<String,Block>)
++ int getDEFAULT_BLOCK_ID()
++ void render(GraphicsContext)
+}
+
+
+class ui.UIElement {
+- String name
+- Image image
+- double positionX
+- double positionY
+- double sizeX
+- double sizeY
++ <<Create>> UIElement(String,Image,double,double,double,double)
++ String getName()
++ void setName(String)
++ Image getImage()
++ void setImage(Image)
++ double getPositionX()
++ void setPositionX(double)
++ double getPositionY()
++ void setPositionY(double)
++ double getSizeX()
++ void setSizeX(double)
++ double getSizeY()
++ void setSizeY(double)
++ void render(GraphicsContext)
++ boolean isInArea(UIElement)
++ boolean isInArea(double,double)
+}
+
+
+class states.GameStateManager {
++ {static} Vector2f mapDimensions
+- {static} ArrayList<GameState> gameStates
++ <<Create>> GameStateManager()
++ {static} GameState getCurrentState()
++ {static} Vector2f getMapDimensions()
++ {static} void setMapDimensions(Vector2f)
++ ArrayList<GameState> getGameStates()
++ void pop(int)
++ void add(int)
++ void addAndPop(int)
++ void update()
++ void input(MouseHandler,KeyHandler)
++ void render(GraphicsContext)
++ void addAndPause(int)
+}
+
+
+enum states.STATES {
++  PLAY_STATE
++  MENU_STATE
++  GAME_OVER_STATE
+}
+
+class util.MouseHandler {
+- boolean isLeftPressed
+- boolean isRightPressed
+- float mouseX
+- float mouseY
+- float leftClickX
+- float leftClickY
++ <<Create>> MouseHandler(Canvas)
++ boolean isLeftPressed()
++ void setLeftPressed(boolean)
++ boolean isRightPressed()
++ void setRightPressed(boolean)
++ float getLeftClickX()
++ float getLeftClickY()
++ void handle(MouseEvent)
++ float getMouseX()
++ float getMouseY()
+}
+
+
+class states.PauseState {
++ <<Create>> PauseState(GameStateManager)
++ void update()
++ void input(MouseHandler,KeyHandler)
++ void render(GraphicsContext)
+}
+
+abstract class tiles.block.Block {
+# int blockWidth
+# int blockHeight
+# Image blockImage
+# Vector2f blockPosition
++ <<Create>> Block(Image,Vector2f,int,int)
++ {abstract}boolean update(AABB)
++ {abstract}boolean isInside(AABB)
++ void render(GraphicsContext)
++ int getBlockWidth()
++ void setBlockWidth(int)
++ int getBlockHeight()
++ void setBlockHeight(int)
++ Image getBlockImage()
++ void setBlockImage(Image)
++ Vector2f getBlockPosition()
++ void setBlockPosition(Vector2f)
++ String toString()
+}
+
+
+class tiles.TileMapNorm {
+- ArrayList<Block> BLOCKS
++ <<Create>> TileMapNorm(String,TreeMap<Integer,Sprite>,int,int,int,int,TreeMap<Integer,Integer>)
++ void render(GraphicsContext)
+}
+
+
+abstract class states.GameState {
+# GameStateManager GSM
++ <<Create>> GameState(GameStateManager)
++ {abstract}void update()
++ {abstract}void input(MouseHandler,KeyHandler)
++ {abstract}void render(GraphicsContext)
+}
+
+
+class graphics.Sprite {
+- int TILE_SIZE
+- int width
+- int height
+- Image spriteSheetImage
+- ArrayList<ArrayList<Image>> spritesInSheet
+- int spriteWidthInSheet
+- int spriteHeightInSheet
++ <<Create>> Sprite(String)
++ <<Create>> Sprite(ArrayList<String>,int,int)
++ <<Create>> Sprite(ArrayList<String>,int,int,boolean)
++ <<Create>> Sprite(String,int,int)
++ <<Create>> Sprite(String,int,int,boolean)
++ <<Create>> Sprite(String,int,int,Map<Integer,Integer>)
++ {static} void drawArray(GraphicsContext,ArrayList<Image>,Vector2f,int,int,int,int)
++ {static} void drawText(GraphicsContext,Font,String,Vector2f)
++ {static} void drawText(GraphicsContext,Font,String,Vector2f,int)
++ {static} void drawText(GraphicsContext,Font,String,Vector2f,Color)
++ {static} void drawText(GraphicsContext,Font,String,Vector2f,int,Color)
+- void loadMultipleLongSpriteArray(Image,int)
+- void loadMultipleSpriteArray(Image,int)
++ int getTILE_SIZE()
++ int getWidth()
++ void setWidth(int)
++ int getHeight()
++ void setHeight(int)
++ int getSpriteHeightInSheet()
++ void setSpriteHeightInSheet(int)
++ void setSize(int,int)
+- void loadSpriteArray()
+- void loadSpriteArray(boolean)
+- void loadSpriteArray(Map<Integer,Integer>)
++ Image getSpriteSheetImage()
++ void setSpriteSheetImage(Image)
++ WritableImage getSpriteFlipImageFromSheet(int,int)
++ WritableImage getSpriteImageFromSheet(int,int)
++ ArrayList<Image> getSpriteArray(int,int)
++ ArrayList<Image> getSpriteArray(int)
++ ArrayList<ArrayList<Image>> getSpritesInSheet()
++ void setSpritesInSheet(ArrayList<ArrayList<Image>>)
++ int getSpriteWidthInSheet()
++ void setSpriteWidthInSheet(int)
+}
+
+
+
+
+tiles.block.Block <|-- tiles.block.ObjBlock
+javafx.event.EventHandler <|.. util.KeyHandler
+entity.AttackSound <|.. entity.Enemy
+entity.Entity <|-- entity.Enemy
+javafx.application.Application <|-- game.GameLauncher
+states.GameState <|-- states.PlayState
+logic.Debuffable <|.. entity.Skill
+states.GameState <|-- states.MenuState
+tiles.block.Block <|-- tiles.block.HoleBlock
+tiles.block.Block <|-- tiles.block.NormBlock
+entity.AttackSound <|.. entity.Player
+entity.Entity <|-- entity.Player
+item.Consumable <|.. item.Food
+logic.Buffable <|.. item.Food
+states.GameState <|-- states.GameOverState
+tiles.TileMap <|-- tiles.TileMapObj
+javafx.event.EventHandler <|.. util.MouseHandler
+states.GameState <|-- states.PauseState
+tiles.TileMap <|-- tiles.TileMapNorm
+@enduml
