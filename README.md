@@ -1,1 +1,9 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-24ddc0f5d75046c5622901739e7c5dd533143b0c8e959d652212380cedb1ea36.svg)](https://classroom.github.com/a/kIBDvrKi)
+# Beneath the ruin
+
+<img src="./README/be_m.png " width="1920" height="1080" alt="Beneath the ruin">
+<img src="./README/be_i.png " width="1920" height="1080" alt="Beneath the ruin">
+
+Beneth the ruin is a game about exploring a ruined city. The game is a 2D game with a top-down perspective. The player will be able to explore the ruin and fight monsters. 
+
+
+
